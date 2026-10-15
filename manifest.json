@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "n-redirect",
+  "name": "Redirect local",
   "description": "URL redirect rules, AEM Author live-to-local rewriting and 404 auto-fix for localhost:4502.",
   "version": "2.2.0",
   "minimum_chrome_version": "116",
@@ -11,7 +11,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "n-redirect",
+    "default_title": "Redirect local",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
@@ -23,10 +23,14 @@
   },
   "permissions": [
     "declarativeNetRequest",
-    "declarativeNetRequestWithHostAccess",
     "storage",
     "webNavigation",
     "webRequest"
   ],
-  "host_permissions": ["<all_urls>"]
+  "host_permissions": [
+    "http://localhost/*",
+    "https://localhost/*",
+    "http://127.0.0.1/*",
+    "https://127.0.0.1/*"
+  ]
 }

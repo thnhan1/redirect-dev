@@ -228,27 +228,27 @@ $("openInEditorBtn").addEventListener("click", async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   const urlObj = C.parseUrl(tab?.url);
   if (!urlObj) return toast("Invalid page URL");
-  if (!/^https?:$/.test(urlObj.protocol)) return toast("This page is not supported");
 
   const aem = currentConfig.aemAuthorRewrite;
   const base = (aem.localhostBase || DEFAULT_BASE).replace(/\/+$/, "");
   const tail = urlObj.search + urlObj.hash;
-  const path = C.cleanSlashes(urlObj.pathname);
+  let path = C.cleanSlashes(urlObj.pathname);
 
-  // Editor -> Preview
+  // Đang ở Editor (/editor.html/...) -> Về Preview (bỏ /editor.html)
   if (path.startsWith("/editor.html/")) {
-    await chrome.tabs.update(tab.id, { url: base + path.slice("/editor.html".length) + tail });
+    const previewPath = path.slice("/editor.html".length);
+    await chrome.tabs.update(tab.id, { url: base + previewPath + tail });
     return toast("Switched to Preview");
   }
-  if (C.isLocalBase(urlObj, aem) && !path.startsWith("/content/") && C.isAemSystemPath(path)) {
-    return toast("Not a content page");
+
+  // Đang ở Preview -> Mở trong Editor (/editor.html/page...)
+  // Đảm bảo có .html nếu chưa có phần mở rộng
+  const lastSeg = path.split("/").pop() || "";
+  if (!lastSeg.includes(".")) {
+    path = path.replace(/\/+$/, "") + ".html";
   }
 
-  // Preview / Live -> Editor
-  const preview = C.buildAemUrl(path, "", { ...aem, prependEditorHtml: false });
-  const target = C.withHtmlExt(preview) || preview;
-  const contentPath = target.slice(base.length);
-  await chrome.tabs.update(tab.id, { url: `${base}/editor.html${contentPath}${tail}` });
+  await chrome.tabs.update(tab.id, { url: `${base}/editor.html${path.startsWith("/") ? "" : "/"}${path}${tail}` });
   toast("Opened in AEM Editor");
 });
 

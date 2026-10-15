@@ -56,9 +56,9 @@
   // Idempotent: a path already under /content/ or /editor.html/ is never prefixed again.
   function buildAemUrl(path, tail, aem) {
     const base = String(aem?.localhostBase || DEFAULT_BASE).replace(/\/+$/, "");
-    const site = cleanSiteName(aem?.defaultSiteName);
+    const site = aem?.defaultSiteName ? cleanSiteName(aem.defaultSiteName) : "";
     let p = cleanSlashes(path.startsWith("/") ? path : "/" + path);
-    if (!p.startsWith("/content/") && !p.startsWith("/editor.html/")) {
+    if (site && site !== "none" && !p.startsWith("/content/") && !p.startsWith("/editor.html/")) {
       p = p === "/" ? `/content/${site}` : `/content/${site}${p}`;
     }
     if (aem?.prependEditorHtml && !p.startsWith("/editor.html/")) p = `/editor.html${p}`;
@@ -169,25 +169,21 @@
     return probes;
   }
 
-  // One simulated hop: a user rule, or the AEM live-domain rewrite (raw path, no probing).
-  function nextHop(rules, url, aem) {
+  // One simulated hop: user rules.
+  function nextHop(rules, url) {
     for (const r of rules) {
       const out = applyRule(r, url);
       if (out !== null) return out;
     }
-    if (aem?.enabled) {
-      const u = parseUrl(url);
-      if (u && (aem.liveDomains || []).includes(u.origin)) return buildAemUrl(u.pathname, u.search + u.hash, aem);
-    }
     return null;
   }
 
-  function simulateChain(rules, start, aem, seenInit = []) {
+  function simulateChain(rules, start, seenInit = []) {
     const seen = new Set(seenInit);
     let cur = start;
     seen.add(cur);
     for (let hop = 0; hop < MAX_CHAIN; hop++) {
-      const next = nextHop(rules, cur, aem);
+      const next = nextHop(rules, cur);
       if (next === null) return null;
       if (next === cur) return "redirects to itself";
       if (seen.has(next)) return `redirect loop (${next})`;
@@ -227,7 +223,7 @@
         if (self) return issues.push({ index, name, id, reason: `Recursive: To starts with From "${self}" (use match type "exact")` });
       }
       for (const { input, output } of ruleProbes(rule)) {
-        const reason = simulateChain(active, output, aem, input ? [input] : []);
+        const reason = simulateChain(active, output, input ? [input] : []);
         if (reason) return issues.push({ index, name, id, reason: `Recursive: ${reason}` });
       }
     });

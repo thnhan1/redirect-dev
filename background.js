@@ -192,15 +192,10 @@ async function doApplyDeclarativeRules(cfg) {
   return skipped;
 }
 
-// ─── Scope ──────────────────────────────────────────────────
-function isLiveUrl(urlObj, aem) {
-  return !!aem?.enabled && aem.liveDomains.includes(urlObj.origin);
-}
-
 // Is this URL something the SW needs to look at? (pure sync check, no I/O)
+// The SW ONLY runs on the developer's localhostBase!
 function isTargetUrl(urlObj, cfg) {
   if (C.isLocalBase(urlObj, cfg.aemAuthorRewrite)) return true;
-  if (isLiveUrl(urlObj, cfg.aemAuthorRewrite)) return true;
   return swOnlyPatterns.some(({ rule, pat }) => C.applyPattern(rule, pat, urlObj.href) !== null);
 }
 
@@ -301,25 +296,15 @@ function extractNested(urlObj) {
 }
 
 async function processAemRewrite(tabId, urlObj, aem) {
-  if (!aem.enabled) return false;
-  const url = urlObj.href;
+  if (!aem.enabled || !C.isLocalBase(urlObj, aem)) return false;
 
-  if (C.isLocalBase(urlObj, aem)) {
-    const nested = extractNested(urlObj);
-    if (!nested) return false;
-    const candidates = C.aemCandidates(nested.path, nested.tail, aem);
-    // A nested URL is never a valid page, so always leave it: best match, else preferred guess.
-    const chosen = (await firstAvailable(candidates)) || candidates[0];
-    return navigate(tabId, url, chosen);
-  }
+  const nested = extractNested(urlObj);
+  if (!nested) return false;
 
-  if (isLiveUrl(urlObj, aem)) {
-    const candidates = C.aemCandidates(urlObj.pathname, urlObj.search + urlObj.hash, aem);
-    // Only leave the live site when the author page really answers 200.
-    const chosen = await firstAvailable(candidates);
-    return chosen ? navigate(tabId, url, chosen) : false;
-  }
-  return false;
+  const candidates = C.aemCandidates(nested.path, nested.tail, aem);
+  // Nested URL is never a valid localhost page: pick first 200 match, else default .html candidate
+  const chosen = (await firstAvailable(candidates)) || candidates[0];
+  return navigate(tabId, urlObj.href, chosen);
 }
 
 // ─── 3. 404 auto-fix (localhostBase only) ───────────────────

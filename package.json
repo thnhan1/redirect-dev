@@ -1,0 +1,8 @@
+{
+  "name": "redirect-local",
+  "version": "2.2.0",
+  "description": "Chrome Extension for URL redirect rules, AEM Author live-to-local rewriting and 404 auto-fix.",
+  "author": "Tran Huu Nhan",
+  "license": "MIT",
+  "private": true
+}

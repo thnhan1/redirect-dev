@@ -16,11 +16,11 @@
 ### 2. Permissions Justification
 Redirect local strictly requests only permissions necessary for its core redirect functionalities:
 
-- **`declarativeNetRequest` & `declarativeNetRequestWithHostAccess`**: Used to perform fast, native browser-level URL redirects according to your configured rules without inspecting request bodies.
+- **`declarativeNetRequest`**: Used to perform fast, native browser-level URL redirects according to your configured rules without inspecting request bodies.
 - **`storage`**: Used to persist your site settings, custom redirect rules, and theme preferences locally.
-- **`webNavigation`**: Used to detect navigation events for live-site to localhost rewriting.
+- **`webNavigation`**: Used to detect navigation events on your local development server when pasting nested URLs.
 - **`webRequest`**: Limited strictly to `localhost` and `127.0.0.1` main frames to trigger the 404 Auto-Fix feature when a local page fails.
-- **Host Permissions (`<all_urls>`)**: Required to rewrite configured live-site URLs into your local AEM instance.
+- **Host Permissions (`localhost`, `127.0.0.1`)**: Strictly scoped to local development servers only. No external web traffic is ever observed or intercepted.
 
 ---
 
