@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirect local</title>
+  <link rel="stylesheet" href="popup.css">
+  <script src="theme.js"></script>
+</head>
+<body>
+  <header>
+    <div class="top">
+      <div class="brand">
+        <span class="logo"><img src="icons/icon48.png" alt=""></span>
+        <div class="title">Redirect local</div>
+      </div>
+      <div class="top-actions">
+        <button class="btn ok" id="openInEditorBtn" title="Toggle the current page between Editor and Preview">✏️ Edit Mode</button>
+        <button class="btn primary" id="saveAllBtn" title="Changes are saved automatically (Ctrl+S to save now)">💾 Save</button>
+        <button class="icon" id="theme" type="button" title="Toggle light/dark theme">🌙</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" data-tab="aem">⚡ Author</button>
+      <button class="tab" data-tab="rules">📋 Rules <b id="ruleCount">0</b></button>
+      <button class="tab" data-tab="json">⚙️ JSON</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Author -->
+    <section class="panel active" id="panel-aem">
+      <div class="card">
+        <div class="card-head">
+          <span>Author Site Rewriter</span>
+          <label class="switch"><input type="checkbox" id="aemEnabled"><span class="slider"></span></label>
+        </div>
+        <div class="card-body">
+          <p class="desc">Rewrite live or nested URLs to <code>/content/{site}/...html</code> if local returns 200.</p>
+          <div class="field">
+            <label for="aemSiteName">Default Site Name</label>
+            <input id="aemSiteName" placeholder="mysite" spellcheck="false">
+          </div>
+          <div class="field">
+            <label for="newLiveDomainInput">Live Domains</label>
+            <div class="row">
+              <select id="newLiveDomainScheme" class="scheme" aria-label="Scheme">
+                <option value="https" selected>https://</option>
+                <option value="http">http://</option>
+              </select>
+              <input id="newLiveDomainInput" placeholder="example.com" spellcheck="false" autocomplete="off">
+              <button class="btn" id="addLiveDomainBtn">Add</button>
+            </div>
+            <div class="tags" id="liveDomainsList"></div>
+          </div>
+          <div class="field" style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+            <label for="aemPrependEditor" style="margin:0; cursor:pointer;">Open in Editor (<code>/editor.html/...</code>)</label>
+            <label class="switch"><input type="checkbox" id="aemPrependEditor"><span class="slider"></span></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span>404 Auto-Fix</span>
+          <label class="switch"><input type="checkbox" id="htmlFallbackEnabled"><span class="slider"></span></label>
+        </div>
+        <div class="card-body">
+          <p class="desc" style="margin:0">On 404/403, auto-try <code>.html</code> and <code>/content/<span id="fallbackSite">mysite</span></code>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Rules -->
+    <section class="panel" id="panel-rules">
+      <div class="card" id="ruleFormCard">
+        <div class="card-head"><span id="rulesFormTitle">Add new rule</span></div>
+        <div class="card-body">
+          <div class="grid2">
+            <div class="field"><label for="ruleTypeInput">Match type</label>
+              <select id="ruleTypeInput">
+                <option value="prefix">prefix</option>
+                <option value="exact">exact</option>
+                <option value="regex">regex</option>
+              </select>
+            </div>
+            <div class="field"><label for="ruleNameInput">Name</label><input id="ruleNameInput" placeholder="My rule (optional)" spellcheck="false"></div>
+          </div>
+          <div class="field">
+            <label for="ruleFromInput">From (one or more URLs, one per line)</label>
+            <textarea id="ruleFromInput" class="mono" rows="2" placeholder="http://localhost:4502/link1&#10;http://localhost:4502/link2" spellcheck="false" style="resize:vertical; min-height:48px;"></textarea>
+          </div>
+          <div class="field"><label for="ruleToInput">To</label><input id="ruleToInput" class="mono" placeholder="http://localhost:4502/" spellcheck="false"></div>
+          <div class="field"><label for="ruleDescInput">Description (optional)</label><input id="ruleDescInput" placeholder="Rule description..."></div>
+          <div class="row">
+            <button class="btn primary block" id="addRuleBtn" style="flex:1;">＋ Add rule</button>
+            <button class="btn danger hidden" id="cancelRuleEditBtn" type="button">✕ Cancel</button>
+          </div>
+        </div>
+      </div>
+      <div class="section-title"><span>Configured rules</span></div>
+      <div id="rulesContainer"></div>
+    </section>
+
+    <!-- JSON -->
+    <section class="panel" id="panel-json">
+      <div class="section-title" style="margin-top:0">
+        <span>JSON Config</span>
+        <span class="row">
+          <button class="btn" id="copyJsonBtn" title="Copy the whole JSON config">📋 Copy</button>
+          <button class="btn" id="formatJsonBtn">✨ Format</button>
+          <button class="btn danger" id="resetBtn" title="Restore default config">↺ Reset</button>
+        </span>
+      </div>
+      <div class="editor">
+        <pre id="jsonHighlight" aria-hidden="true"></pre>
+        <textarea id="jsonArea" spellcheck="false"></textarea>
+      </div>
+      <div id="jsonStatus" class="status"></div>
+    </section>
+  </main>
+
+  <div id="toast"></div>
+  <script src="rules-core.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

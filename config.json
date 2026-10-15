@@ -1,0 +1,32 @@
+{
+  "rules": [
+    {
+      "id": "localhost-https-to-http",
+      "description": "Redirect https://localhost:4502/* → http://localhost:4502/*",
+      "enabled": true,
+      "matchType": "prefix",
+      "from": "https://localhost:4502/",
+      "to": "http://localhost:4502/"
+    },
+    {
+      "id": "localhost-4503-https-to-http",
+      "description": "Redirect https://localhost:4503/* → http://localhost:4503/*",
+      "enabled": false,
+      "matchType": "prefix",
+      "from": "https://localhost:4503/",
+      "to": "http://localhost:4503/"
+    }
+  ],
+
+  "aemAuthorRewrite": {
+    "enabled": true,
+    "localhostBase": "http://localhost:4502",
+    "defaultSiteName": "mysite",
+    "prependEditorHtml": false,
+    "liveDomains": []
+  },
+
+  "htmlFallback": {
+    "enabled": true
+  }
+}

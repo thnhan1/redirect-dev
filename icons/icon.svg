@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
+    </linearGradient>
+  </defs>
+  <!-- Background rounded squircle -->
+  <rect width="128" height="128" rx="28" fill="url(#blueGrad)"/>
+  
+  <!-- Right-pointing redirect arrow -->
+  <path d="M 32 82 L 32 58 C 32 44 44 38 60 38 L 84 38" 
+        fill="none" 
+        stroke="#FFFFFF" 
+        stroke-width="12" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+  <path d="M 72 26 L 96 38 L 72 50 Z" 
+        fill="#FFFFFF"/>
+        
+  <!-- Accent dot/ring representing local target -->
+  <circle cx="32" cy="84" r="7" fill="#60A5FA"/>
+</svg>
