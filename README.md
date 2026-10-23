@@ -27,6 +27,9 @@ Automatically redirects live-site URLs into local AEM Author environments, recov
 3. Click **Load unpacked**.
 4. Select the `redirect-dev` directory.
 
+### Install via Extension store
+- Chrome/Edge: [Install Now](https://chromewebstore.google.com/detail/nammcnlocinediehekepkbimplmidhao)
+- Firefox: Updating
 ---
 
 ## ⚙️ Configuration Format
